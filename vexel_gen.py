@@ -6,6 +6,7 @@
 
 License = '''
         // Copyright © 2024 Rene Lindsay (rjklindsay@hotmail.com)
+        // Report bugs and download new versions at https://github.com/renelindsay/Vexel
         //
         // Permission is hereby granted, free of charge, to any person obtaining a copy
         // of this software and associated documentation files (the "Software"), to deal
@@ -281,7 +282,11 @@ def generate_source(filename):
             HMODULE LoadVulkan(){{return LoadLibrary(\"vulkan-1.dll\");}}
         #else
             #include <dlfcn.h>
-            void* LoadVulkan(){{return dlopen(\"libvulkan.so\", RTLD_NOW | RTLD_LOCAL);}}
+            void* LoadVulkan(){{
+                void*    lib = dlopen(\"libvulkan.so\", RTLD_NOW | RTLD_LOCAL);
+                if(!lib) lib = dlopen(\"libvulkan.so.1\", RTLD_NOW | RTLD_LOCAL);
+                return lib;
+            }}
         #endif
         
         #include "{header}"

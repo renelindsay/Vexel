@@ -1,7 +1,7 @@
 # VEXEL - Vulkan Extension Loader
 
 ## Purpose
-VEXEL (Vulkan Extension Loader) is a cross-platform Vulkan extension loader for use in Vulkan projects. It simplifies Vulkan initialization, extension management, and function loading, with optional support for device-specific dispatch tables.
+VEXEL (Vulkan Extension Loader) is a cross-platform Vulkan extension loader.  It simplifies Vulkan initialization, extension management, and function loading, with optional support for device-specific dispatch tables.
 
 ## Features
 - **Cross-Platform Support**: Works seamlessly on Windows, Linux, and Android.
