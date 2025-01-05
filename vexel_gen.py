@@ -165,7 +165,7 @@ def parse_subheader(filename, ext_guard):
                 current_ext = Extension(name, ext_guard)
                 sub_extensions.append(current_ext)
 
-            elif name := search(r'^typedef .+?\*PFN_(vk[^VoidFunction]\w+).*?\);', line):  # Get proc name
+            elif name := search(r'^typedef .+?\*PFN_(vk(?!VoidFunction)\w+).*?\);', line):  # Get proc name
                 disp = search(r'\)\((Vk\w+)', line)         # get dispatch type, if any
                 current_ext.procs.append(Proc(name, disp))  # add proc to list for current extension
     return sub_extensions
@@ -205,6 +205,9 @@ def generate_header(filename):
         
         #define VK_NO_PROTOTYPES 1
         #include <vulkan/vulkan.h>
+        
+        // Device specific dispatch table, used by vexLoadDeviceTable()
+        struct vexDeviceTable;
         
         // Load Vulkan function pointers for runtime dispatch by the loader. (slow)
         // Returns true if Vulkan is available, false if not.
@@ -251,7 +254,7 @@ def generate_header(filename):
                 for proc in ext.procs:
                     if proc.type == Proc.DEVICE:
                         cpp += f"    PFN_{proc.name} {proc.name};\n"
-        cpp +="}"
+        cpp +="};"
 
     cpp += textwrap.dedent(f"""\n
         #ifdef __cplusplus
