@@ -1,15 +1,18 @@
 # VEXEL - Vulkan Extension Loader
 
 ## Purpose
+
 VEXEL (Vulkan Extension Loader) is a cross-platform Vulkan extension loader.  It simplifies Vulkan initialization, extension management, and function loading, with optional support for device-specific dispatch tables.
 
 ## Features
+
 - **Cross-Platform Support**: Works seamlessly on Windows, Linux, and Android.
 - **Simplicity**: Auto-loads core and extension Vulkan function pointers.
 - **Improve Performance**: Optionally generates device-specific dispatch tables to skip runtime dispatch.
 - **Flexibility**: Include the extensions you need, without having to call **vkGetDeviceProcAddr()**.
 
 ## Code Generator
+
 First, run the vexel_gen.py Python script. It downloads the latest Khronos Vulkan headers, and generates the extension loader, (vexel.cpp and vexel.h) from it.  These files can then be added to your C/C++ project, to load Vulkan and initialize its function ponters.
 
 ## Getting Started
@@ -37,8 +40,8 @@ Download the Vulkan headers, Generate the Extension Loader and list included ext
 | `-v, --verbose`  | List extensions and their associated functions. |
 | `--ext`          | Specify additional extensions to include.       |
 
-
 ### Add Optional Extensions
+
 The loader always includes all Vulkan Core extensions.  
 By default, the loader also includes VK_KHR extensions. (Ratified by Khronos, and widely supported.)  
 Other extensions are not included by default, but may be added, using the --ext flag.  
@@ -53,7 +56,6 @@ You may add individual extensions, like VK_NV_ray_tracing, or groups, like VK_EX
     ./vexel_gen.py -g --ext                # generate loader, including only core extensions
     ./vexel_gen.py -g --ext VK_KHR         # generate loader, including only core and VK_KHR
 
-
 ## Using Vulkan Extension Loader
 
 1. Add vexel.cpp and vexel.h to your project.
@@ -64,6 +66,7 @@ Vexel Auto-initializes Vulkan, so Vulkan and included extensions should now work
 However, if you prefer to call vexInitialize() manually, comment out the 'AutoRun' line near the top of vexel.cpp.
 
 ### API Reference
+
 ```c++
     // Load Vulkan function pointers for runtime dispatch by the loader. (slow)
     // Returns true if Vulkan is available, false if not.
@@ -77,6 +80,7 @@ However, if you prefer to call vexInitialize() manually, comment out the 'AutoRu
     // Allows each GPU to have its own function table, to skip runtime dispatch.
     void vexLoadDeviceTable(VkDevice device, vexDeviceTable* table);
 ```
+
 ## References and Credits
 
 VEXEL was inspired by the following tools:
@@ -85,7 +89,6 @@ VEXEL was inspired by the following tools:
 - [**gl3w**](https://github.com/skaslev/gl3w): A lightweight OpenGL extension loader generator.
 - **vulkan_wrapper**: Previously included in the Android NDK.
 
-These tools laid the groundwork for VEXEL, and we thank their authors for their contributions to the Vulkan ecosystem.
 
 
 ## Contributing

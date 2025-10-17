@@ -110,10 +110,10 @@ class Proc(object):
         self.type = self.get_type()
 
     def get_type(self):
-        if not self.dispatch:                                               return self.LOADER
-        elif   self.dispatch in ["VkInstance", "VkPhysicalDevice"]:         return self.INSTANCE
-        elif   self.dispatch in ["VkDevice", "VkQueue", "VkCommandBuffer"]: return self.DEVICE
-        else:  print("Warning: Unknown dispatch type: {self.dispatch}")
+        if not self.dispatch:                                                                           return self.LOADER
+        elif   self.dispatch in ["VkInstance", "VkPhysicalDevice"]:                                     return self.INSTANCE
+        elif   self.dispatch in ["VkDevice", "VkQueue", "VkCommandBuffer", "VkExternalComputeQueueNV"]: return self.DEVICE
+        else:  print(f"Warning: Unknown dispatch type: {self.dispatch}")
 
     def __repr__(self):
         return f"Proc(name={repr(self.name)}, dispatch={repr(self.dispatch)})"
