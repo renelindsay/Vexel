@@ -13,7 +13,7 @@ VEXEL (Vulkan Extension Loader) is a cross-platform Vulkan extension loader.  It
 
 ## Code Generator
 
-First, run the vexel_gen.py Python script. It downloads the latest Khronos Vulkan headers, and generates the extension loader, (vexel.cpp and vexel.h) from it.  These files can then be added to your C/C++ project, to load Vulkan and initialize its function ponters.
+First, run the vexel_gen.py Python script. It downloads the latest Khronos Vulkan headers, and generates the extension loader, (vexel.cpp and vexel.h) from it.  These files can then be added to your C/C++ project, to load Vulkan and initialize its function pointers.
 
 ## Getting Started
 
@@ -79,6 +79,10 @@ However, if you prefer to call vexInitialize() manually, comment out the 'AutoRu
     // Load a 'vexDeviceTable' struct with device specific pointers. (fast)
     // Allows each GPU to have its own function table, to skip runtime dispatch.
     void vexLoadDeviceTable(VkDevice device, vexDeviceTable* table);
+    
+    // Many Vulkan functions return a VkResult enum code to indicate failure modes.
+    // This converts VkResult to its string representation, for printing debug messages.
+    const char* VkResultToString(VkResult err);
 ```
 
 ## References and Credits
@@ -89,8 +93,6 @@ VEXEL was inspired by the following tools:
 - [**gl3w**](https://github.com/skaslev/gl3w): A lightweight OpenGL extension loader generator.
 - **vulkan_wrapper**: Previously included in the Android NDK.
 
-
-
 ## Contributing
 
 Contributions are welcome! Please submit issues or pull requests via the GitHub repository.
@@ -98,3 +100,19 @@ Contributions are welcome! Please submit issues or pull requests via the GitHub 
 ## License
 
 VEXEL is licensed under the MIT License. See the `LICENSE` file for details.
+
+
+
+## Notes
+
+Install uv:
+
+```bash
+curl -LsSf https://astral.sh/uv/install.sh | sh
+```
+
+Install dependendies and run:
+
+```bash
+uv run python vexel_gen.py
+```
