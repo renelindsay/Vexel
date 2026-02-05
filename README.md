@@ -21,7 +21,6 @@ First, run the vexel_gen.py Python script. It downloads the latest Khronos Vulka
 
 - Python 3.6 or newer.
 - A C++ compiler supporting C++11 or later.
-- On Windows: pip install requests
 
 ### Basic Usage
 

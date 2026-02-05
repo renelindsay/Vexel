@@ -35,8 +35,10 @@ import zipfile
 import io
 import sys
 import argparse
-import requests
-from requests.exceptions import HTTPError, Timeout, ConnectionError
+
+import urllib.request
+import urllib.error
+import socket
 
 # Add Optional functions:
 Add_vexLoadDevice       = True
@@ -54,18 +56,20 @@ def progress_bar(iteration, total, length=50):
     sys.stdout.write(f'[{bar}] {int(percent)}%\r')
     sys.stdout.flush()
 
-def show_progress(caption, itteration, total, length=25):
+def show_progress(caption, iteration, total, length=25):
     print('\r\033[K', end='')  # clear line
     print(caption, end='')
-    if itteration<0: print(' failed')
-    elif itteration<total: progress_bar(itteration, total, length)
+    if iteration<0: print(' failed')
+    elif iteration<total: progress_bar(iteration, total, length)
     else: print(' done', end='')
 
 def try_download_vulkan_headers():
     try: download_vulkan_headers()
-    except (HTTPError, Timeout, ConnectionError) as e:  print(f"\nError during download:\n{e}")
-    except zipfile.BadZipFile:                          print(f"\nThe downloaded file is not a valid ZIP archive.")
-    except Exception as e:                              print(f"\nAn unexpected error occurred:\n{e}")
+    except urllib.error.HTTPError as e: print(f"\nHTTP error during download:\n{e}")
+    except urllib.error.URLError as e:  print(f"\nConnection error during download:\n{e}")
+    except socket.timeout as e:         print(f"\nTimeout during download:\n{e}")
+    except zipfile.BadZipFile:          print("\nThe downloaded file is not a valid ZIP archive.")
+    except Exception as e:              print(f"\nAn unexpected error occurred:\n{e}")
 
 def download_vulkan_headers():
     url = "https://github.com/KhronosGroup/Vulkan-Headers/archive/refs/heads/main.zip"
@@ -73,20 +77,19 @@ def download_vulkan_headers():
     print("Download Vulkan headers:", end="")
     sys.stdout.flush()
 
-    response = requests.get(url, stream = True)
-    response.raise_for_status()                                  # Raise an error if the request failed
-    total_size = int(response.headers.get('Content-Length', 0))  # Get the total file size (fails)
-    total_size = max(total_size, chunk_size*37)                  # Fallback size estimate
-    downloaded_size = 0
-    zip_data = io.BytesIO()
+    req = urllib.request.Request(url, headers={"User-Agent": "vexel-gen/1.0"})
 
-    # Download the file in chunks and update the progress bar
-    for chunk in response.iter_content(chunk_size=chunk_size):
-        if not chunk: break
-        zip_data.write(chunk)
-        downloaded_size += len(chunk)
-        #progress_bar(downloaded_size, total_size)
-        show_progress('Download Vulkan headers:', downloaded_size, total_size)
+    with urllib.request.urlopen(req, timeout=30) as response:
+        total_size = response.headers.get("Content-Length")
+        total_size = int(total_size) if total_size else chunk_size * 37
+        downloaded_size = 0
+        zip_data = io.BytesIO()
+        while True:
+            chunk = response.read(chunk_size)
+            if not chunk: break
+            zip_data.write(chunk)
+            downloaded_size += len(chunk)
+            show_progress("Download Vulkan headers:", downloaded_size, total_size)
     zip_data.seek(0)
 
     # Extract header files from zip data
@@ -96,10 +99,11 @@ def download_vulkan_headers():
             if member.startswith(src_path) and len(member) > len(src_path):
                 dst_path = member[len(src_path):]
                 if dst_path.endswith("/"):
-                    os.makedirs(dst_path[:-1], exist_ok=True)  # create directory
+                    os.makedirs(dst_path[:-1], exist_ok=True)
                 else:
-                    with open(dst_path, 'wb') as f:
-                        f.write(zip_file.read(member))  # write file
+                    os.makedirs(os.path.dirname(dst_path), exist_ok=True)
+                    with open(dst_path, "wb") as f:
+                        f.write(zip_file.read(member))
     print()
 
 class Proc(object):
